@@ -11,9 +11,15 @@ module ActsAsFollower
     yield @configuration if block_given?
   end
 
+  def self.deprecator
+    @deprecator ||= ActiveSupport::Deprecation.new('next-version', 'acts_as_follower')
+  end
+
   def self.method_missing(method_name, *args, &block)
     if method_name == :custom_parent_classes=
-      ActiveSupport::Deprecation.warn("Setting custom parent classes is deprecated and will be removed in future versions.")
+      deprecator.warn(
+        "Setting custom parent classes is deprecated and will be removed in future versions."
+      )
     end
     @configuration.respond_to?(method_name) ?
         @configuration.send(method_name, *args, &block) : super
